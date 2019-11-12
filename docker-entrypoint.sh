@@ -37,6 +37,9 @@ fi
 # Initialize database
 python manage.py db upgrade
 
+# Import existing db
+python import.py /tmp/dtf.2019-11-12.zip  
+
 # Start CTFd
 echo "Starting CTFd"
 exec gunicorn 'CTFd:create_app()' \
