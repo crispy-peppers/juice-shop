@@ -38,41 +38,6 @@ import logging
 import os
 import sys
 
-class ReverseProxied(object):
-
-    def __init__(self, app, script_name=None, scheme=None, server=None):
-        self.app = app
-        self.script_name = request.script_root
-        self.scheme = scheme
-        self.server = server
-
-    def __call__(self, environ, start_response):
-        script_name = environ.get('HTTP_X_SCRIPT_NAME', '') or self.script_name
-        print("script_name")
-        print(script_name)
-        print("HTTP_X_ORIGINAL_URI")
-        print(environ["HTTP_X_ORIGINAL_URI"])
-        if script_name:
-            environ['SCRIPT_NAME'] = script_name
-            path_info = environ['PATH_INFO']
-            print(path_info)
-            if path_info != "/":
-                #if path_info.startswith(script_name):
-                pass
-                # environ['PATH_INFO'] = path_info[len(script_name):]
-                #environ['PATH_INFO'] = environ['HTTP_X_ORIGINAL_URI']
-        # os.environ['HTTP_X_ORIGINAL_URI'] = environ['HTTP_X_ORIGINAL_URI']
-        print("path_info")
-        print(environ['PATH_INFO'])
-        scheme = environ.get('HTTP_X_SCHEME', '') or self.scheme
-        if scheme:
-            environ['wsgi.url_scheme'] = scheme
-        server = environ.get('HTTP_X_FORWARDED_SERVER', '') or self.server
-        if server:
-            environ['HTTP_HOST'] = server
-        return self.app(environ, start_response)
-
-
 def init_template_filters(app):
     app.jinja_env.filters["markdown"] = markdown
     app.jinja_env.filters["unix_time"] = unix_time
@@ -277,4 +242,3 @@ def init_request_processors(app):
                     )
 
         app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {application_root: app})
-
