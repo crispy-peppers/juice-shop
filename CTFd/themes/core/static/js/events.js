@@ -8,7 +8,7 @@ var sound = new Howl({
 });
 
 function connect() {
-  window.ctfEventSource = new EventSource(script_root + "/events");
+  window.ctfEventSource = new EventSource(script_root + "events");
 
   window.ctfEventSource.addEventListener(
     "notification",
