@@ -19,8 +19,10 @@ COPY dtf.2019-11-12.zip /tmp
 RUN pip install -r requirements.txt
 
 RUN apk add git curl wget python python3 vim nano bash
+WORKDIR /
 RUN git clone https://github.com/crispy-peppers/flask && cd flask && pip install -e ".[dev]"
 
+WORKDIR /opt/CTFd
 COPY . /opt/CTFd
 
 RUN for d in CTFd/plugins/*; do \
