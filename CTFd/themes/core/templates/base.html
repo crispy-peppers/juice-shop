@@ -31,7 +31,8 @@
 	<script src="{{ url_for('views.themes', path='js/vendor/moment.min.js') }}"></script>
 	<script src="{{ url_for('views.themes', path='js/vendor/nunjucks.min.js') }}"></script>
 	<script type="text/javascript">
-		var script_root = "{{ request.script_root }}";
+		//var script_root = "{{ request.script_root }}";
+		var script_root = "/" + window.location.pathname.replace(/^\/([^\/]*).*$/, '$1') + "/";
 		var csrf_nonce = "{{ nonce }}";
 		var user_mode = "{{ get_config('user_mode') }}";
 		var ctf_start = {{ get_config("start") | tojson }};

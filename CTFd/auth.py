@@ -270,10 +270,10 @@ def login():
                 log("logins", "[{date}] {ip} - {name} logged in")
 
                 db.session.close()
-                if request.args.get("next") and validators.is_safe_url(
-                    request.args.get("next")
-                ):
-                    return redirect(request.args.get("next"))
+                #if request.args.get("next") and validators.is_safe_url(
+                #    request.args.get("next")
+                #):
+                #return redirect(request.args.get("next"))
                 return redirect(url_for("challenges.listing"))
 
             else:

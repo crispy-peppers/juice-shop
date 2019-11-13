@@ -1,4 +1,4 @@
-echo 2.4 > VERSION
+echo 2.8 > VERSION
 VERSION=$(cat VERSION)
 sudo docker build -t packed4rmadillo/juice-shop:$VERSION .
 sudo docker tag packed4rmadillo/juice-shop:$VERSION packed4rmadillo/juice-shop:latest

@@ -38,6 +38,40 @@ import logging
 import os
 import sys
 
+class ReverseProxied(object):
+
+    def __init__(self, app, script_name=None, scheme=None, server=None):
+        self.app = app
+        self.script_name = request.script_root
+        self.scheme = scheme
+        self.server = server
+
+    def __call__(self, environ, start_response):
+        script_name = environ.get('HTTP_X_SCRIPT_NAME', '') or self.script_name
+        print("script_name")
+        print(script_name)
+        print("HTTP_X_ORIGINAL_URI")
+        print(environ["HTTP_X_ORIGINAL_URI"])
+        if script_name:
+            environ['SCRIPT_NAME'] = script_name
+            path_info = environ['PATH_INFO']
+            print(path_info)
+            if path_info != "/":
+                #if path_info.startswith(script_name):
+                pass
+                # environ['PATH_INFO'] = path_info[len(script_name):]
+                #environ['PATH_INFO'] = environ['HTTP_X_ORIGINAL_URI']
+        # os.environ['HTTP_X_ORIGINAL_URI'] = environ['HTTP_X_ORIGINAL_URI']
+        print("path_info")
+        print(environ['PATH_INFO'])
+        scheme = environ.get('HTTP_X_SCHEME', '') or self.scheme
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        server = environ.get('HTTP_X_FORWARDED_SERVER', '') or self.server
+        if server:
+            environ['HTTP_HOST'] = server
+        return self.app(environ, start_response)
+
 
 def init_template_filters(app):
     app.jinja_env.filters["markdown"] = markdown
@@ -146,6 +180,7 @@ def init_request_processors(app):
 
     @app.before_request
     def needs_setup():
+        return
         if request.path == url_for("views.setup") or request.path.startswith("/themes"):
             return
         if not is_setup():
@@ -214,13 +249,32 @@ def init_request_processors(app):
                     abort(403)
 
     application_root = app.config.get("APPLICATION_ROOT")
+    application_root = "/"
+    import traceback
     if application_root != "/":
-
         @app.before_request
         def force_subdirectory_redirect():
-            if request.path.startswith(application_root) is False:
-                return redirect(
-                    application_root + request.script_root + request.full_path
-                )
+            # print(traceback.print_stack())
+            # app.wsgi_app = ReverseProxied(app.wsgi_app)
+            print("request.path")
+            print(request.path)
+            print(application_root)
+            print(request.script_root)
+            print(request.full_path)
+            original_uri = request.environ['HTTP_X_ORIGINAL_URI']
+            print("original_uri")
+            print(original_uri)
+            if request.path == "/":
+                pass
+                #return redirect(request.script_root+ request.full_path)
+            else:
+                return
+                if request.path.startswith(application_root) is False:
+                    return redirect(
+                        application_root + request.script_root + request.full_path
+                       #  application_root + request.script_root
+                       #request.environ['HTTP_X_ORIGINAL_URI']
+                    )
 
         app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {application_root: app})
+
